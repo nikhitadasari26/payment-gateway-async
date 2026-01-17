@@ -1,0 +1,26 @@
+setup:
+  - name: Install Docker
+    command: docker --version
+
+start:
+  - name: Start Services
+    command: docker compose up -d
+
+verify:
+  - name: Check Containers
+    command: docker ps
+  - name: Job Queue Status
+    command: curl http://localhost:8000/api/v1/test/jobs/status
+
+tests:
+  - name: Create Order
+    command: |
+      curl -X POST http://localhost:8000/api/v1/orders \
+      -H "X-Api-Key: key_test_abc123" \
+      -H "X-Api-Secret: secret_test_xyz789" \
+      -H "Content-Type: application/json" \
+      -d '{"amount":50000,"currency":"INR","receipt":"test_123"}'
+
+shutdown:
+  - name: Stop Services
+    command: docker compose down
